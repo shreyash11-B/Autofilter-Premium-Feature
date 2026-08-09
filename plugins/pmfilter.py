@@ -58,9 +58,19 @@ async def give_filter(client, message):
         except KeyError:
             pass
     else:
-        search = message.text
-        _, _, total_results = await get_search_results(chat_id=message.chat.id, query=search.lower(), offset=0, filter=True)
-        if total_results == 0:
+    await message.reply_text(
+        text=(
+            "🎬 <b>Movie search is not available here.</b>\n\n"
+            "Please use our Request Group to search for your movie.\n\n\n\n"
+            "👇 Movie search karne ke liye neeche diye gaye Request Group par click karo."
+        ),
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton(
+                "🎬 REQUEST GROUP 🔎",
+                url="https://t.me/+c7r4Sv6rx6JhMmI1"
+            )]]
+        )
+    )
             return
         await message.reply_text(
             f"<b>Hᴇʏ {message.from_user.mention},\n\n"
