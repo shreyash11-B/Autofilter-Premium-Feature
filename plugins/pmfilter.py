@@ -98,10 +98,20 @@ async def pm_text(bot, message):
     if content.startswith(("#")):
         return
     try:
-        await mdb.update_top_messages(user_id, content)
-        pm_search = await db.pm_search_status(bot_id)
-        if pm_search:
-            await auto_filter(bot, message)
+              await message.reply_text(
+            text=(
+                "🎬 <b>Movie search is not available here.</b>\n\n"
+                "Please use our Request Group to search for your movie.\n\n\n\n"
+                "👇 Movie search karne ke liye neeche diye gaye Request Group par click karo."
+            ),
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton(
+                    "🎬 REQUEST GROUP 🔎",
+                    url="https://t.me/+c7r4Sv6rx6JhMmI1"
+                )]]
+            )
+        )
+        return
         else:
             await message.reply_text(
                 text=(
