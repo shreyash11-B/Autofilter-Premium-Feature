@@ -174,7 +174,20 @@ async def pm_text(bot, message):
 
     except Exception as e:
         logger.exception(e)
+@Client.on_message(filters.group & filters.text & filters.incoming)
+async def give_filter(client, message):
 
+    if message.chat.id == SUPPORT_CHAT_ID:
+        return
+
+    try:
+        settings = await get_settings(message.chat.id)
+
+        if settings.get("auto_ffilter"):
+            return await auto_filter(client, message)
+
+    except Exception as e:
+        logger.exception(e)
 
 @Client.on_callback_query(filters.regex(r"^reffff"))
 async def refercall(bot, query):
