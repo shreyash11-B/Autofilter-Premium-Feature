@@ -38,50 +38,50 @@ BUTTONS2 = {}
 SPELL_CHECK = {}
 
 
-@Client.on_message(filters.group & filters.text & filters.incoming)
-async def give_filter(client, message):
-    if EMOJI_MODE:
-        try:
-            await message.react(emoji=random.choice(REACTIONS), big=True)
-        except Exception:
-            await message.react(emoji="⚡️", big=True)
-    await mdb.update_top_messages(message.from_user.id, message.text)
-    if message.chat.id != SUPPORT_CHAT_ID:
-        settings = await get_settings(message.chat.id)
-        try:
-            if settings['auto_ffilter']:
-                if re.search(r'https?://\S+|www\.\S+|t\.me/\S+', message.text):
-                    if await is_check_admin(client, message.chat.id, message.from_user.id):
-                        return
-                    return await message.delete()
-                await auto_filter(client, message)
-        except KeyError:
-            pass
-    else:
-    await message.reply_text(
-        text=(
-            "🎬 <b>Movie search is not available here.</b>\n\n"
-            "Please use our Request Group to search for your movie.\n\n\n\n"
-            "👇 Movie search karne ke liye neeche diye gaye Request Group par click karo."
-        ),
-        reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton(
-                "🎬 REQUEST GROUP 🔎",
-                url="https://t.me/+c7r4Sv6rx6JhMmI1"
-            )]]
-        )
-    )
-            return
+@Client.on_message(
+    filters.private &
+    filters.text &
+    filters.incoming &
+    ~filters.regex(r"^/")
+)
+async def pm_text(bot, message):
+
+    user = message.from_user.first_name
+    user_id = message.from_user.id
+    content = message.text
+
+    try:
+        # Normal users are NOT allowed to search in PM
         await message.reply_text(
-            f"<b>Hᴇʏ {message.from_user.mention},\n\n"
-            f"ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛ ɪꜱ ᴀʟʀᴇᴀᴅʏ ᴀᴠᴀɪʟᴀʙʟᴇ ✅\n\n"
-            f"📂 ꜰɪʟᴇꜱ ꜰᴏᴜɴᴅ : {str(total_results)}\n"
-            f"🔍 ꜱᴇᴀʀᴄʜ :</b> <code>{search}</code>\n\n"
-            f"<b>‼️ ᴛʜɪs ɪs ᴀ <u>sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ</u> sᴏ ᴛʜᴀᴛ ʏᴏᴜ ᴄᴀɴ'ᴛ ɢᴇᴛ ғɪʟᴇs ғʀᴏᴍ ʜᴇʀᴇ...\n\n"
-            f"📝 ꜱᴇᴀʀᴄʜ ʜᴇʀᴇ : 👇</b>",
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🔍 ᴊᴏɪɴ ᴀɴᴅ ꜱᴇᴀʀᴄʜ ʜᴇʀᴇ 🔎", url=GRP_LNK)]])
+            text=(
+                f"<b>👋 HEY {user},\n\n"
+                "🚫 YOU CANNOT SEARCH FOR MOVIES HERE IN DIRECT MESSAGES.\n\n"
+                "💎 PREMIUM USERS CAN SEARCH DIRECTLY IN PM.\n"
+                "👉 PLEASE JOIN OUR MOVIE GROUP AND SEARCH THERE 👇\n\n"
+                "<blockquote>"
+                "आप Direct Bot पर Movie Search नहीं कर सकते। "
+                "कृपया हमारे Movie Group को Join करें और वहाँ Search करें।"
+                "</blockquote></b>"
+            ),
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "🔍 SEARCH HERE",
+                        url="https://t.me/+c7r4Sv6rx6JhMmI1"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "🚀 BUY PREMIUM",
+                        callback_data="premium_info"
+                    )
+                ]
+            ]),
+            parse_mode=enums.ParseMode.HTML
         )
+
+    except Exception as e:
+        logger.exception(e)
 
 
 @Client.on_message(filters.private & filters.text & filters.incoming & ~filters.regex(r"^/"))
