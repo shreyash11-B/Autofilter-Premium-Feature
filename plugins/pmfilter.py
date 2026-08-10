@@ -85,11 +85,17 @@ async def pm_text(bot, message):
 
 
 @Client.on_message(filters.private & filters.text & filters.incoming & ~filters.regex(r"^/"))
+@Client.on_message(
+    filters.private &
+    filters.text &
+    filters.incoming &
+    ~filters.regex(r"^/")
+)
 async def pm_text(bot, message):
-    bot_id = bot.me.id
-    content = message.text
+
     user = message.from_user.first_name
     user_id = message.from_user.id
+    content = message.text
 
     if EMOJI_MODE:
         try:
@@ -98,12 +104,15 @@ async def pm_text(bot, message):
                 big=True
             )
         except Exception:
-            await message.react(
-                emoji="⚡️",
-                big=True
-            )
+            try:
+                await message.react(
+                    emoji="⚡️",
+                    big=True
+                )
+            except Exception:
+                pass
 
-    if content.startswith(("#")):
+    if content.startswith("#"):
         return
 
     try:
@@ -125,7 +134,7 @@ async def pm_text(bot, message):
         if is_premium:
             return await auto_filter(bot, message)
 
-        # NORMAL USER → show restriction message
+        # NORMAL USER → block PM search
         await message.reply_text(
             text=(
                 f"<b>👋 HEY {user},\n\n"
