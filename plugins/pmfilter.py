@@ -90,48 +90,82 @@ async def pm_text(bot, message):
     content = message.text
     user = message.from_user.first_name
     user_id = message.from_user.id
+
     if EMOJI_MODE:
         try:
-            await message.react(emoji=random.choice(REACTIONS), big=True)
+            await message.react(
+                emoji=random.choice(REACTIONS),
+                big=True
+            )
         except Exception:
-            await message.react(emoji="⚡️", big=True)
+            await message.react(
+                emoji="⚡️",
+                big=True
+            )
+
     if content.startswith(("#")):
         return
+
     try:
-              await message.reply_text(
+        # Check premium user
+        user_data = await db.get_user(user_id)
+
+        is_premium = False
+
+        if user_data and user_data.get("expiry_time"):
+            expiry_time = user_data.get("expiry_time")
+
+            try:
+                if expiry_time > datetime.now():
+                    is_premium = True
+            except Exception:
+                pass
+
+        # PREMIUM USER → allow movie search in PM
+        if is_premium:
+            return await auto_filter(bot, message)
+
+        # NORMAL USER → show restriction message
+        await message.reply_text(
             text=(
-                "🎬 <b>Movie search is not available here.</b>\n\n"
-                "Please use our Request Group to search for your movie.\n\n\n\n"
-                "👇 Movie search karne ke liye neeche diye gaye Request Group par click karo."
+                f"<b>👋 HEY {user},\n\n"
+                "🚫 YOU CANNOT SEARCH FOR MOVIES HERE IN DIRECT MESSAGES.\n\n"
+                "💎 PREMIUM USERS CAN SEARCH DIRECTLY IN PM.\n"
+                "👉 PLEASE JOIN OUR MOVIE GROUP AND SEARCH THERE 👇\n\n"
+                "<blockquote>"
+                "आप Direct Bot पर Movie Search नहीं कर सकते। "
+                "कृपया हमारे Movie Group को Join करें और वहाँ Search करें।"
+                "</blockquote></b>"
             ),
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(
-                    "🎬 REQUEST GROUP 🔎",
-                    url="https://t.me/+c7r4Sv6rx6JhMmI1"
-                )]]
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "🔍 SEARCH HERE",
+                        url="https://t.me/+c7r4Sv6rx6JhMmI1"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "🚀 BUY PREMIUM",
+                        callback_data="premium_info"
+                    )
+                ]
+            ]),
+            parse_mode=enums.ParseMode.HTML
+        )
+
+        await bot.send_message(
+            chat_id=LOG_CHANNEL,
+            text=(
+                f"#𝐏𝐌_𝐌𝐒𝐆\n\n"
+                f"👤 Nᴀᴍᴇ : {user}\n"
+                f"🆔 ID : {user_id}\n"
+                f"💬 Mᴇssᴀɢᴇ : {content}"
             )
         )
-        return
-        else:
-            await message.reply_text(
-                text=(
-                    f"<b>🙋 ʜᴇʏ {user} 😍 ,\n\n"
-                    "𝒀𝒐𝒖 𝒄𝒂𝒏 𝒔𝒆𝒂𝒓𝒄𝒉 𝒇𝒐𝒓 𝒎𝒐𝒗𝒊𝒆𝒔 𝒐𝒏𝒍𝒚 𝒐𝒏 𝒐𝒖𝒓 𝑴𝒐𝒗𝒊𝒆 𝑮𝒓𝒐𝒖𝒑. 𝒀𝒐𝒖 𝒂𝒓𝒆 𝒏𝒐𝒕 𝒂𝒍𝒍𝒐𝒘𝒆𝒅 𝒕𝒐 𝒔𝒆𝒂𝒓𝒄𝒉 𝒇𝒐𝒓 𝒎𝒐𝒗𝒊𝒆𝒔 𝒐𝒏 𝑫𝒊𝒓𝒆𝒄𝒕 𝑩𝒐𝒕. 𝑷𝒍𝒆𝒂𝒔𝒆 𝒋𝒐𝒊𝒏 𝒐𝒖𝒓 𝒎𝒐𝒗𝒊𝒆 𝒈𝒓𝒐𝒖𝒑 𝒃𝒚 𝒄𝒍𝒊𝒄𝒌𝒊𝒏𝒈 𝒐𝒏 𝒕𝒉𝒆  𝑹𝑬𝑸𝑼𝑬𝑺𝑻 𝑯𝑬𝑹𝑬 𝒃𝒖𝒕𝒕𝒐𝒏 𝒈𝒊𝒗𝒆𝒏 𝒃𝒆𝒍𝒐𝒘 𝒂𝒏𝒅 𝒔𝒆𝒂𝒓𝒄𝒉 𝒚𝒐𝒖𝒓 𝒇𝒂𝒗𝒐𝒓𝒊𝒕𝒆 𝒎𝒐𝒗𝒊𝒆 𝒕𝒉𝒆𝒓𝒆 👇\n\n"
-                    "<blockquote>"
-                    "आप केवल हमारे 𝑴𝒐𝒗𝒊𝒆 𝑮𝒓𝒐𝒖𝒑 पर ही 𝑴𝒐𝒗𝒊𝒆 𝑺𝒆𝒂𝒓𝒄𝒉 कर सकते हो । "
-                    "आपको 𝑫𝒊𝒓𝒆𝒄𝒕 𝑩𝒐𝒕 पर 𝑴𝒐𝒗𝒊𝒆 𝑺𝒆𝒂𝒓𝒄𝒉 करने की 𝑷𝒆𝒓𝒎𝒊𝒔𝒔𝒊𝒐𝒏 नहीं है कृपया नीचे दिए गए 𝑹𝑬𝑸𝑼𝑬𝑺𝑻 𝑯𝑬𝑹𝑬 वाले 𝑩𝒖𝒕𝒕𝒐𝒏 पर क्लिक करके हमारे 𝑴𝒐𝒗𝒊𝒆 𝑮𝒓𝒐𝒖𝒑 को 𝑱𝒐𝒊𝒏 करें और वहां पर अपनी मनपसंद 𝑴𝒐𝒗𝒊𝒆 𝑺𝒆𝒂𝒓𝒄𝒉 सर्च करें ।"
-                    "</blockquote></b>"
-                ), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("📝 ʀᴇǫᴜᴇsᴛ ʜᴇʀᴇ ", url=GRP_LNK)]]))
-            await bot.send_message(chat_id=LOG_CHANNEL,
-                                   text=(
-                                       f"<b>#𝐏𝐌_𝐌𝐒𝐆\n\n"
-                                       f"👤 Nᴀᴍᴇ : {user}\n"
-                                       f"🆔 ID : {user_id}\n"
-                                       f"💬 Mᴇssᴀɢᴇ : {content}</b>"
-                                   )
-                                   )
-    except Exception:
-        pass
+
+    except Exception as e:
+        logger.exception(e)
 
 
 @Client.on_callback_query(filters.regex(r"^reffff"))
