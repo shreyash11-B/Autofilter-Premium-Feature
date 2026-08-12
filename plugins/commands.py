@@ -339,6 +339,7 @@ async def start(client, message):
                 allowed, used = await mdb.check_and_count_file(
                     user_id,
                     limit=5
+                    print(f"LIMIT DEBUG → user={user_id}, premium={is_premium}, allowed={allowed}, used={used}")
                 )
 
                 if not allowed:
