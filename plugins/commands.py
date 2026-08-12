@@ -330,11 +330,9 @@ async def start(client, message):
                 '<b><i>ɴᴏ ꜱᴜᴄʜ ꜰɪʟᴇ ᴇxɪꜱᴛꜱ !</b></i>'
             )
 
-        filesarr = []
+  filesarr = []
 
-      for file in files:
-
-  for file in files:
+for file in files:
 
     # 🆓 FREE USER → COUNT EACH FILE
     print("DEBUG PREMIUM =", is_premium)
@@ -374,6 +372,7 @@ async def start(client, message):
             )
             break
 
+    # ⚠️ IMPORTANT: YE `if not allowed` KE BAHAR HONA CHAHIYE
     file_id = file.file_id
 
     files_ = await get_file_details(file_id)
@@ -403,69 +402,7 @@ async def start(client, message):
     if f_caption is None:
         f_caption = clean_filename(files1.file_name)
 
-    if STREAM_MODE and not PREMIUM_STREAM_MODE:
-
-        btn = [
-            [
-                InlineKeyboardButton(
-                    '🚀 ꜰᴀsᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️',
-                    callback_data=f'generate_stream_link:{file_id}'
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    '📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌',
-                    url=UPDATE_CHNL_LNK
-                )
-            ]
-        ]
-
-    elif STREAM_MODE and PREMIUM_STREAM_MODE:
-
-        if not is_premium:
-
-            btn = [
-                [
-                    InlineKeyboardButton(
-                        '🚀 ꜰᴀsᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️',
-                        callback_data='prestream'
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        '📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌',
-                        url=UPDATE_CHNL_LNK
-                    )
-                ]
-            ]
-
-        else:
-
-            btn = [
-                [
-                    InlineKeyboardButton(
-                        '🚀 ꜰᴀsᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️',
-                        callback_data=f'generate_stream_link:{file_id}'
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        '📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌',
-                        url=UPDATE_CHNL_LNK
-                    )
-                ]
-            ]
-
-    else:
-
-        btn = [
-            [
-                InlineKeyboardButton(
-                    '📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌',
-                    url=UPDATE_CHNL_LNK
-                )
-            ]
-        ]
+    # ... tumhara existing STREAM_MODE wala code ...
 
     msg = await client.send_cached_media(
         chat_id=user_id,
@@ -479,28 +416,6 @@ async def start(client, message):
     )
 
     filesarr.append(msg)
-
-
-k = await client.send_message(
-    chat_id=user_id,
-    text=script.DEL_MSG.format(get_time(DELETE_TIME)),
-    parse_mode=enums.ParseMode.HTML
-)
-
-await asyncio.sleep(DELETE_TIME)
-
-for x in filesarr:
-    try:
-        await x.delete()
-    except Exception:
-        pass
-
-await k.edit_text(
-    "<b>ʏᴏᴜʀ ᴀʟʟ ᴠɪᴅᴇᴏs/ꜰɪʟᴇs ᴀʀᴇ ᴅᴇʟᴇᴛᴇᴅ ꜱᴜᴄᴄᴇssғᴜʟʟʏ !\n"
-    "ᴋɪɴᴅʟʏ ꜱᴇᴀʀᴄʜ ᴀɢᴀɪɴ</b>"
-)
-
-return
 
     except Exception as e:
         logger.exception(e)
