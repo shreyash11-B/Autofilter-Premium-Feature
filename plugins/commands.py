@@ -334,6 +334,8 @@ async def start(client, message):
 
       for file in files:
 
+  for file in files:
+
     # 🆓 FREE USER → COUNT EACH FILE
     print("DEBUG PREMIUM =", is_premium)
     print("DEBUG USER =", user_id)
@@ -372,131 +374,133 @@ async def start(client, message):
             )
             break
 
-            file_id = file.file_id
+    file_id = file.file_id
 
-            files_ = await get_file_details(file_id)
-            files1 = files_[0]
+    files_ = await get_file_details(file_id)
+    files1 = files_[0]
 
-            title = clean_filename(files1.file_name)
-            size = get_size(files1.file_size)
-            f_caption = files1.caption
+    title = clean_filename(files1.file_name)
+    size = get_size(files1.file_size)
+    f_caption = files1.caption
 
-            settings = await get_settings(int(grp_id))
+    settings = await get_settings(int(grp_id))
 
-            DREAMX_CAPTION = settings.get(
-                'caption',
-                CUSTOM_FILE_CAPTION
+    DREAMX_CAPTION = settings.get(
+        'caption',
+        CUSTOM_FILE_CAPTION
+    )
+
+    if DREAMX_CAPTION:
+        try:
+            f_caption = DREAMX_CAPTION.format(
+                file_name='' if title is None else title,
+                file_size='' if size is None else size,
+                file_caption='' if f_caption is None else f_caption
             )
+        except Exception as e:
+            logger.exception(e)
 
-            if DREAMX_CAPTION:
-                try:
-                    f_caption = DREAMX_CAPTION.format(
-                        file_name='' if title is None else title,
-                        file_size='' if size is None else size,
-                        file_caption='' if f_caption is None else f_caption
+    if f_caption is None:
+        f_caption = clean_filename(files1.file_name)
+
+    if STREAM_MODE and not PREMIUM_STREAM_MODE:
+
+        btn = [
+            [
+                InlineKeyboardButton(
+                    '🚀 ꜰᴀsᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️',
+                    callback_data=f'generate_stream_link:{file_id}'
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    '📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌',
+                    url=UPDATE_CHNL_LNK
+                )
+            ]
+        ]
+
+    elif STREAM_MODE and PREMIUM_STREAM_MODE:
+
+        if not is_premium:
+
+            btn = [
+                [
+                    InlineKeyboardButton(
+                        '🚀 ꜰᴀsᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️',
+                        callback_data='prestream'
                     )
-                except Exception as e:
-                    logger.exception(e)
-
-            if f_caption is None:
-                f_caption = clean_filename(files1.file_name)
-
-            if STREAM_MODE and not PREMIUM_STREAM_MODE:
-
-                btn = [
-                    [
-                        InlineKeyboardButton(
-                            '🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️',
-                            callback_data=f'generate_stream_link:{file_id}'
-                        )
-                    ],
-                    [
-                        InlineKeyboardButton(
-                            '📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌',
-                            url=UPDATE_CHNL_LNK
-                        )
-                    ]
+                ],
+                [
+                    InlineKeyboardButton(
+                        '📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌',
+                        url=UPDATE_CHNL_LNK
+                    )
                 ]
+            ]
 
-            elif STREAM_MODE and PREMIUM_STREAM_MODE:
+        else:
 
-                if not is_premium:
-
-                    btn = [
-                        [
-                            InlineKeyboardButton(
-                                '🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️',
-                                callback_data='prestream'
-                            )
-                        ],
-                        [
-                            InlineKeyboardButton(
-                                '📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌',
-                                url=UPDATE_CHNL_LNK
-                            )
-                        ]
-                    ]
-
-                else:
-
-                    btn = [
-                        [
-                            InlineKeyboardButton(
-                                '🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️',
-                                callback_data=f'generate_stream_link:{file_id}'
-                            )
-                        ],
-                        [
-                            InlineKeyboardButton(
-                                '📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌',
-                                url=UPDATE_CHNL_LNK
-                            )
-                        ]
-                    ]
-            else:
-
-                btn = [
-                    [
-                        InlineKeyboardButton(
-                            '📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌',
-                            url=UPDATE_CHNL_LNK
-                        )
-                    ]
+            btn = [
+                [
+                    InlineKeyboardButton(
+                        '🚀 ꜰᴀsᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️',
+                        callback_data=f'generate_stream_link:{file_id}'
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        '📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌',
+                        url=UPDATE_CHNL_LNK
+                    )
                 ]
+            ]
 
-            msg = await client.send_cached_media(
-                chat_id=user_id,
-                file_id=file_id,
-                caption=f_caption,
-                protect_content=settings.get(
-                    'file_secure',
-                    PROTECT_CONTENT
-                ),
-                reply_markup=InlineKeyboardMarkup(btn)
-            )
+    else:
 
-            filesarr.append(msg)
+        btn = [
+            [
+                InlineKeyboardButton(
+                    '📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌',
+                    url=UPDATE_CHNL_LNK
+                )
+            ]
+        ]
 
-        k = await client.send_message(
-            chat_id=user_id,
-            text=script.DEL_MSG.format(get_time(DELETE_TIME)),
-            parse_mode=enums.ParseMode.HTML
-        )
+    msg = await client.send_cached_media(
+        chat_id=user_id,
+        file_id=file_id,
+        caption=f_caption,
+        protect_content=settings.get(
+            'file_secure',
+            PROTECT_CONTENT
+        ),
+        reply_markup=InlineKeyboardMarkup(btn)
+    )
 
-        await asyncio.sleep(DELETE_TIME)
+    filesarr.append(msg)
 
-        for x in filesarr:
-            try:
-                await x.delete()
-            except Exception:
-                pass
 
-        await k.edit_text(
-            "<b>ʏᴏᴜʀ ᴀʟʟ ᴠɪᴅᴇᴏs/ꜰɪʟᴇs ᴀʀᴇ ᴅᴇʟᴇᴛᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ !\n"
-            "ᴋɪɴᴅʟʏ ꜱᴇᴀʀᴄʜ ᴀɢᴀɪɴ</b>"
-        )
+k = await client.send_message(
+    chat_id=user_id,
+    text=script.DEL_MSG.format(get_time(DELETE_TIME)),
+    parse_mode=enums.ParseMode.HTML
+)
 
-        return
+await asyncio.sleep(DELETE_TIME)
+
+for x in filesarr:
+    try:
+        await x.delete()
+    except Exception:
+        pass
+
+await k.edit_text(
+    "<b>ʏᴏᴜʀ ᴀʟʟ ᴠɪᴅᴇᴏs/ꜰɪʟᴇs ᴀʀᴇ ᴅᴇʟᴇᴛᴇᴅ ꜱᴜᴄᴄᴇssғᴜʟʟʏ !\n"
+    "ᴋɪɴᴅʟʏ ꜱᴇᴀʀᴄʜ ᴀɢᴀɪɴ</b>"
+)
+
+return
 
     except Exception as e:
         logger.exception(e)
