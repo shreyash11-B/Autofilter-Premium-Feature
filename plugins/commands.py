@@ -332,36 +332,45 @@ async def start(client, message):
 
         filesarr = []
 
-        for file in files:
+      for file in files:
 
-            # 🆓 FREE USER → COUNT EACH FILE
-            if not is_premium:
-                allowed, used = await mdb.check_and_count_file(
-                    user_id,
-                    limit=5
-                    print(f"LIMIT DEBUG → user={user_id}, premium={is_premium}, allowed={allowed}, used={used}")
-                )
+    # 🆓 FREE USER → COUNT EACH FILE
+    print("DEBUG PREMIUM =", is_premium)
+    print("DEBUG USER =", user_id)
 
-                if not allowed:
-                    await client.send_message(
-                        chat_id=user_id,
-                        text=(
-                            "<b>🚫 FREE DAILY LIMIT REACHED</b>\n\n"
-                            "You have received <b>5 files today</b>.\n\n"
-                            "💎 Want unlimited files?\n"
-                            "Buy Premium now 👇"
-                        ),
-                        reply_markup=InlineKeyboardMarkup([
-                            [
-                                InlineKeyboardButton(
-                                    "💎 BUY PREMIUM",
-                                    callback_data="premium_info"
-                                )
-                            ]
-                        ]),
-                        parse_mode=enums.ParseMode.HTML
-                    )
-                    break
+    if not is_premium:
+        allowed, used = await mdb.check_and_count_file(
+            user_id,
+            limit=5
+        )
+
+        print(
+            f"LIMIT DEBUG → user={user_id}, "
+            f"premium={is_premium}, "
+            f"allowed={allowed}, "
+            f"used={used}"
+        )
+
+        if not allowed:
+            await client.send_message(
+                chat_id=user_id,
+                text=(
+                    "<b>🚫 FREE DAILY LIMIT REACHED</b>\n\n"
+                    "You have received <b>5 files today</b>.\n\n"
+                    "💎 Want unlimited files?\n"
+                    "Buy Premium now 👇"
+                ),
+                reply_markup=InlineKeyboardMarkup([
+                    [
+                        InlineKeyboardButton(
+                            "💎 BUY PREMIUM",
+                            callback_data="premium_info"
+                        )
+                    ]
+                ]),
+                parse_mode=enums.ParseMode.HTML
+            )
+            break
 
             file_id = file.file_id
 
