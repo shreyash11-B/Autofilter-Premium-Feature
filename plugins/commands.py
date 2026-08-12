@@ -334,6 +334,8 @@ async def start(client, message):
 
 for file in files:
 
+for file in files:
+
     # 🆓 FREE USER → COUNT EACH FILE
     print("DEBUG PREMIUM =", is_premium)
     print("DEBUG USER =", user_id)
@@ -372,6 +374,7 @@ for file in files:
             )
             break
 
+    # ⬇️ ISKE BAAD TUMHARA EXISTING FILE-SEND CODE
     # ⚠️ IMPORTANT: YE `if not allowed` KE BAHAR HONA CHAHIYE
     file_id = file.file_id
 
