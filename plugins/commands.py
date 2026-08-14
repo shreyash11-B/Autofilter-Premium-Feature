@@ -315,10 +315,10 @@ async def start(client, message):
             print(f"Error In Verification - {e}")
             pass
 
-if data.startswith("allfiles"):
-    try:
-        user_id = message.from_user.id
-        is_premium = await db.has_premium_access(user_id)
+        if data.startswith("allfiles"):
+        try:
+            user_id = message.from_user.id
+            is_premium = await db.has_premium_access(user_id)
 
         files = temp.GETALL.get(file_id)
 
