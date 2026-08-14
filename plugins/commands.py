@@ -382,9 +382,9 @@ if data.startswith("allfiles"):
             title = clean_filename(files1.file_name)
             size = get_size(files1.file_size)
             f_caption = files1.caption
+
             
-              if not f_caption or str(f_caption).strip().lower() == "none":
-    f_caption = clean_filename(files.file_name)
+                     
             
             settings = await get_settings(int(grp_id))
 
