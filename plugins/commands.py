@@ -331,15 +331,15 @@ async def start(client, message):
 
         for file in files:
 
-            # 🆓 FREE USER → COUNT EACH FILE
-            print("DEBUG PREMIUM =", is_premium)
-            print("DEBUG USER =", user_id)
+    if not is_premium:
+        allowed, used = await mdb.check_and_count_file(
+            user_id,
+            limit=5
+        )
 
-            if not is_premium:
-                allowed, used = await mdb.check_and_count_file(
-                    user_id,
-                    limit=5
-                )
+        if not allowed:
+            # limit reached wala code
+            break
 
                 print(
                     f"LIMIT DEBUG → user={user_id}, "
