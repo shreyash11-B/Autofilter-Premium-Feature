@@ -21,7 +21,28 @@ from info import *
 from utils import get_settings, save_group_settings, is_subscribed, is_req_subscribed, get_size, get_shortlink, is_check_admin, temp, get_readable_time, get_time, generate_settings_text, log_error, clean_filename
 import time
 
+# ================= THUMBNAIL SYSTEM =================
 
+THUMBNAIL_DIR = "z thumbnail py for bot"
+
+def get_random_thumbnail():
+    """Pick a random thumbnail from the thumbnail folder."""
+
+    if not os.path.exists(THUMBNAIL_DIR):
+        return None
+
+    thumbnails = [
+        os.path.join(THUMBNAIL_DIR, file)
+        for file in os.listdir(THUMBNAIL_DIR)
+        if file.lower().endswith((".jpg", ".jpeg", ".png"))
+    ]
+
+    if not thumbnails:
+        return None
+
+    return random.choice(thumbnails)
+
+# ====================================================
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
